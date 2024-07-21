@@ -62,18 +62,22 @@ def post_image(cl, image_path, caption):
             elif attempt == max_attempts - 1:
                 raise
 
-def generate_daily_schedule(image_folder):
+def generate_daily_schedule(image_folder, start_time):
     images = os.listdir(image_folder)
     schedule_times = []
     
+    current_time = start_time
     for _ in images:
-        # Generate a random time between 9 AM and 9 PM
-        hour = random.randint(9, 21)
-        minute = random.randint(0, 59)
-        schedule_times.append(f"{hour:02d}:{minute:02d}")
+        schedule_times.append(current_time.strftime("%H:%M"))
+        
+        # Add a random interval between 30 minutes to 2 hours for the next post
+        interval = random.randint(30, 120)
+        current_time += timedelta(minutes=interval)
+        
+        # If we've passed midnight, break the loop
+        if current_time.day != start_time.day:
+            break
     
-    # Sort the times to ensure they're in order
-    schedule_times.sort()
     return schedule_times
 
 def schedule_and_post():
@@ -103,17 +107,28 @@ def schedule_and_post():
         traceback.print_exc()
         return False
 
+# Calculate the start time (1 minute from now)
+start_time = datetime.now() + timedelta(minutes=1)
+
 # Generate the daily schedule
 image_folder = 'images'
+
+# Create the 'images' folder if it doesn't exist
+if not os.path.exists(image_folder):
+    os.makedirs(image_folder)
+    print(f"Created folder: {image_folder}")
+
+# Now proceed with listing images and generating the schedule
 images = os.listdir(image_folder)
-daily_schedule = generate_daily_schedule(image_folder)
+daily_schedule = generate_daily_schedule(image_folder, start_time)
 images_to_post = len(images)
 
 # Schedule the posting function to run at the calculated times
 for post_time in daily_schedule:
     schedule.every().day.at(post_time).do(schedule_and_post)
 
-logger.info(f"Scheduled {len(daily_schedule)} posts at: {', '.join(daily_schedule)}")
+logger.info(f"Scheduled {len(daily_schedule)} posts starting at: {daily_schedule[0]}")
+logger.info(f"Full schedule: {', '.join(daily_schedule)}")
 
 # Keep the script running until all images are posted
 while images_to_post > 0:
