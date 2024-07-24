@@ -1,3 +1,6 @@
+# [DEPRECATED]
+Please take a look at [this project](https://github.com/aalapd/grampy) instead.
+
 # Instagram Scheduled Poster
 
 ## Overview
