@@ -14,7 +14,7 @@ This Python script automates the process of posting images to Instagram on a sch
 ## Usage
 - Create a folder called 'images' in the same directory as the script.
 - Run the script with:
-`python ./post_to_ig.py`
+`python ./main.py`
 
 The script will generate a daily schedule for all images in the 'images' folder and post them at random times. It will continue running until all images have been posted.
 
