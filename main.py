@@ -1,12 +1,7 @@
-import os
-import traceback
+import os, sys, traceback
 from instagrapi import Client
-from instagrapi.exceptions import LoginRequired
 from datetime import datetime, timedelta
-import schedule
-import time
-import logging
-import random
+import schedule, time, logging, random
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -15,6 +10,11 @@ logger = logging.getLogger()
 # Instagram credentials
 USERNAME = os.getenv('INSTAGRAM_USERNAME')
 PASSWORD = os.getenv('INSTAGRAM_PASSWORD')
+
+if not USERNAME or not PASSWORD:
+    logging.error('Username or password not found')
+    sys.exit('Username or password not found')
+
 
 def exponential_backoff(attempt, max_delay=3600):
     delay = min(30 * (2 ** attempt), max_delay)
